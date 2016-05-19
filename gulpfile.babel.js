@@ -40,8 +40,8 @@ gulp.task('default', ['clean'], () => {
 gulp.task('build', [
   'copy',
   'imagemin',
-  'jade',
   'stylus',
+  'jade',
   'browserify'
 ]);
 
@@ -49,8 +49,8 @@ gulp.task('build', [
 gulp.task('serve', [
   'imagemin',
   'copy',
-  'jade',
   'stylus',
+  'jade',
   'browserify',
   'browserSync',
   'watch'
@@ -58,23 +58,24 @@ gulp.task('serve', [
 
 // generate sprite.png and _sprite.scss
 gulp.task('sprite', function() {
-    var spriteData =
-        gulp.src('./src/_images/*.png')
-            .pipe(spritesmith({
-                imgName: 'sprite.png',
-                cssName: 'sprite.styl',
-                cssFormat: 'stylus',
-                algorithm: 'top-down',
-                algorithmOpts: {sort: false},
-                cssTemplate: 'stylus.template.mustache',
-                cssVarMap: function(sprite) {
-                    sprite.name = 's-' + sprite.name
-                }
-            }));
+  var spriteData =
+    gulp.src('./src/_images/*.png')
+      .pipe(spritesmith({
+        imgName: 'sprite.png',
+        cssName: 'sprite.styl',
+        cssFormat: 'stylus',
+        algorithm: 'top-down',
+        algorithmOpts: {sort: false},
+        cssTemplate: 'stylus.template.mustache',
+        cssVarMap: function(sprite) {
+            sprite.name = 's-' + sprite.name
+        }
+      }));
 
-    spriteData.img.pipe(gulp.dest('./src/_images/anim/'));
-    spriteData.css.pipe(gulp.dest('./src/_styles/sprites/'));
+  spriteData.img.pipe(gulp.dest('./src/_images/anim/'));
+  spriteData.css.pipe(gulp.dest('./src/_styles/sprites/'));
 });
+
 // Testing
 gulp.task('test', ['eslint'], (done) => {
   new KarmaServer({
