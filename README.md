@@ -1,1 +1,1 @@
-npm install -g gulp jade jeet && npm install && gulp
+npm install -g gulp stylus jade jeet && npm install && gulp
