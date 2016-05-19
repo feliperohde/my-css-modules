@@ -1,0 +1,10 @@
+mixin text(spec)
+  - spec = spec || {}
+  - spec.__class = spec.__class || ''
+  - spec.text = spec.text || 'Default text'
+
+  .text(class=spec.__class)&attributes(attributes)
+    if block
+      block
+    else
+      != spec.text

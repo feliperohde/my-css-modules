@@ -1,0 +1,67 @@
+b
+strong
+  font-weight bolder
+.c-text
+  rem(16px)
+  lem(24px)
+  @extend .clear
+  color $gray
+  @extend .f-dbbook
+
+  p
+    margin-bottom remify(gutter * 2)
+
+  [allowfullscreen]
+    width 100%
+    min-height 300px
+
+
+  b, strong
+    font-weight bold
+    @extend .f-dbbold
+    color $blue
+
+  i
+    font-style italic
+
+  .wp-caption
+    max-width 100%
+    overflow hidden
+    position relative
+    margin 0
+    margin-bottom remify(gutter * 4)
+
+    &.alignleft
+      float left
+      margin-right remify(gutter)
+
+    &.alignright
+      float right
+      margin-left remify(gutter)
+
+    &.aligncenter
+      margin 0 auto
+      @extend .clear
+
+    img[width]
+      max-width 100%
+      height auto
+
+    .wp-caption-text
+      color $light-gray
+      @extend .f-dbbook
+      rem(14px)
+      lem(16px)
+      padding-left remify(gutter)
+
+  ul
+  ol
+
+    margin-bottom remify(gutter *2)
+    li
+      list-style inside
+      margin-bottom remify(gutter)
+
+  ol
+    li
+      list-style-type decimal

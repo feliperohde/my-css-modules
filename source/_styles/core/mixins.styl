@@ -1,0 +1,25 @@
+rem(value)
+  font-size value /* add PX (or original value) as backup */
+
+  if (value is inherit) {
+      /* do nothing, "inherit" has no unit */
+  } else {
+      font-size remify(value)
+  }
+
+lem(value)
+  line-height value /* add PX (or original value) as backup */
+
+  if (value is inherit) {
+      /* do nothing, "inherit" has no unit */
+  } else {
+      line-height remify(value)
+  }
+remify(value)
+  u = unit(value)
+
+  if (u is 'px') {
+      return unit(value/16, 'rem')
+  } else {
+      return unit(value, u)
+  }
