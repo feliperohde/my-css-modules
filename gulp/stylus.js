@@ -8,6 +8,7 @@ import nib from "nib";
 import cssModules from "postcss-modules";
 import fs from "fs";
 import gutil from "gulp-util";
+import glob from "glob";
 
 export default function(gulp, plugins, args, config, taskTarget, browserSync) {
 
@@ -21,12 +22,12 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
       this.push(new gutil.File({ cwd: "", base: "", path: filename, contents: new Buffer(string) }))
       this.push(null)
     }
-    return src
+    return src;
   }
 
-  // Stylus compilation
-  gulp.task('stylus', () => {
-    gulp.src(path.join(dirs.source, dirs.styles, entries.css))
+  let stylusCompileTask = (file) => {
+
+    gulp.src(file)
     .pipe(plugins.plumber())
     .pipe(plugins.sourcemaps.init())
     .pipe(plugins.stylus({
@@ -72,5 +73,49 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
     .pipe(plugins.sourcemaps.write('./'))
     .pipe(gulp.dest(dest))
     .pipe(browserSync.stream());
+  };
+
+  // Stylus compilation
+  gulp.task('stylus', ['stylusmain'], () => {
+
+    glob('./source/_modules/**/**.styl', function (er, files) {
+    // files is an array of filenames.
+    // If the `nonull` option is set, and nothing
+    // was found, then files is ["**/*.js"]
+    // er is an error object or null.
+
+      if (er) {
+        done(er);
+      }
+
+      for (var i = files.length - 1; i >= 0; i--) {
+        gutil.log(files[i]);
+        stylusCompileTask(files[i]);
+      }
+
+    });
+
+  });
+
+  // Stylus compilation
+  gulp.task('stylusmain', () => {
+
+    glob(path.join(dirs.source, dirs.styles, entries.css), function (er, files) {
+    // files is an array of filenames.
+    // If the `nonull` option is set, and nothing
+    // was found, then files is ["**/*.js"]
+    // er is an error object or null.
+
+      if (er) {
+        //done(er);
+      }
+
+      for (var i = files.length - 1; i >= 0; i--) {
+        gutil.log(files[i]);
+        stylusCompileTask(files[i]);
+      }
+
+    });
+
   });
 }
