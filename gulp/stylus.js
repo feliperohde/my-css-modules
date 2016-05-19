@@ -27,30 +27,35 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
   // Stylus compilation
   gulp.task('stylus', () => {
     gulp.src(path.join(dirs.source, dirs.styles, entries.css))
-      .pipe(plugins.plumber())
-      .pipe(plugins.sourcemaps.init())
-      .pipe(plugins.stylus({
-          compress: true,
-          paths:  ['node_modules', 'styles/globals'],
-          import: ['jeet/stylus/jeet', 'stylus-type-utils', 'nib', 'rupture/rupture'],
-          use: [nib(), jeet()],
-          'include css': true
-        }))
-      .pipe(
-        plugins.postcss(
+    .pipe(plugins.plumber())
+    .pipe(plugins.sourcemaps.init())
+    .pipe(plugins.stylus({
+      compress: true,
+      paths:  ['node_modules', 'styles/globals'],
+      import: ['jeet/stylus/jeet', 'stylus-type-utils', 'nib', 'rupture/rupture'],
+      use: [nib(), jeet()],
+      'include css': true
+    }))
+    .pipe(
+      plugins.postcss(
 
         [
 
-        autoprefixer({browsers: ['last 2 version', '> 5%', 'safari 5', 'ios 6', 'android 4']}),
+          autoprefixer({browsers: ['last 2 version', '> 5%', 'safari 5', 'ios 6', 'android 4']}),
 
-        cssModules({
-          getJSON: function(cssFileName, json) {
-              var path          = require('path');
+          cssModules({
+            getJSON: function(cssFileName, json) {
               var cssName       = path.basename(cssFileName, '.css');
               var jsonFileName  = path.resolve("css_modules_" + cssName + '.json');
-              //fs.writeFileSync( jsonFileName, JSON.stringify(json));
-              return string_src(jsonFileName, JSON.stringify(json))
-                    .pipe(gulp.dest(path.join(dirs.source, dirs.styles)))
+                return string_src(jsonFileName, JSON.stringify(json))
+                .pipe(gulp.dest(path.join(dirs.source, dirs.styles)))
+            },
+            generateScopedName: function(name, filename, css) {
+              var i         = css.indexOf('.' + name);
+              var numLines  = css.substr(0, i).split(/[\r\n]/).length;
+              var file      = path.basename(filename, '.css');
+
+              return '_' + file + Math.random().toString(36).substr(2, 9);
             }
           })
 
@@ -58,14 +63,14 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
 
         )
       )
-      .pipe(plugins.rename(function(path) {
+    .pipe(plugins.rename(function(path) {
         // Remove 'source' directory as well as prefixed folder underscores
         // Ex: 'src/_styles' --> '/styles'
         path.dirname = path.dirname.replace(dirs.source, '').replace('_', '');
       }))
-      .pipe(gulpif(args.production, plugins.cssnano({rebase: false})))
-      .pipe(plugins.sourcemaps.write('./'))
-      .pipe(gulp.dest(dest))
-      .pipe(browserSync.stream());
+    .pipe(gulpif(args.production, plugins.cssnano({rebase: false})))
+    .pipe(plugins.sourcemaps.write('./'))
+    .pipe(gulp.dest(dest))
+    .pipe(browserSync.stream());
   });
 }

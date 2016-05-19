@@ -29,35 +29,3 @@ block append scripts
 > The `first` and `second` blocks can contain default markup, but also allow you to extend from this layout and overwrite them.
 > You can read more about extensions and blocks on the [Jade website](http://jade-lang.com/reference/)
 
-## Sub-generator
-
-You can easily create new layouts using the built-in sub-generator like so:
-
-```
-yo yeogurt:layout two-col
-```
-
-### Extend from a layout other than `base`
-
-You can also create a new layout that extends from a different layout file than `base.jade`.
-
-```
-yo yeogurt:layout three-col --layout=two-col
-```
-
-This new layout will look something like this:
-
-```jade
-extend ./two-col
-
-// Add extra stylesheets
-block append stylesheets
-
-block content
-  //- Provides layout level markup
-  .layout-wrapper.three-col
-    block three-col
-
-// Add extra scripts
-block append scripts
-```
