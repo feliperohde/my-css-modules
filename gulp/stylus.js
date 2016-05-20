@@ -9,6 +9,7 @@ import cssModules from "postcss-modules";
 import fs from "fs";
 import gutil from "gulp-util";
 import glob from "glob";
+import concat from "gulp-concat";
 
 export default function(gulp, plugins, args, config, taskTarget, browserSync) {
 
@@ -25,7 +26,22 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
     return src;
   }
 
-  let stylusCompileTask = (file) => {
+  gulp.task('concat', function() {
+    return gulp.src(dest + '/*.css')
+      .pipe(concat('build.css'))
+      .pipe(gulp.dest(dest + '/build/'));
+  });
+
+  function jsonConcat(o1, o2) {
+   for (var key in o2) {
+    o1[key] = o2[key];
+   }
+   return o1;
+  }
+
+  let jsonData = {};
+  let stylusCompileTask = (file, isLast) => {
+
 
     gulp.src(file)
     .pipe(plugins.plumber())
@@ -48,8 +64,20 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
             getJSON: function(cssFileName, json) {
               var cssName       = path.basename(cssFileName, '.css');
               var jsonFileName  = path.resolve("css_modules_" + cssName + '.json');
+
+
+              jsonData = jsonConcat(jsonData, json);
+
+              if(isLast) {
+                string_src("css_modules_all.json", JSON.stringify(jsonData))
+                .pipe(gulp.dest(path.join(dirs.source + '/' + dirs.styles)));
+
+                gulp.start('cleanCssBuild');
+                gulp.start('concat');
+              }
+
                 return string_src(jsonFileName, JSON.stringify(json))
-                .pipe(gulp.dest(path.join(dirs.source, dirs.styles)))
+                .pipe(gulp.dest(path.dirname(file)));
             },
             generateScopedName: function(name, filename, css) {
               var i         = css.indexOf('.' + name);
@@ -78,7 +106,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
   // Stylus compilation
   gulp.task('stylus', ['stylusmain'], () => {
 
-    glob('./source/_modules/**/**.styl', function (er, files) {
+    return glob('./source/_modules/**/**.styl', function (er, files) {
     // files is an array of filenames.
     // If the `nonull` option is set, and nothing
     // was found, then files is ["**/*.js"]
@@ -89,8 +117,8 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
       }
 
       for (var i = files.length - 1; i >= 0; i--) {
-        gutil.log(files[i]);
-        stylusCompileTask(files[i]);
+        //gutil.log(files[i]);
+        stylusCompileTask(files[i], (i == 0) ? true : false);
       }
 
     });
@@ -100,7 +128,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
   // Stylus compilation
   gulp.task('stylusmain', () => {
 
-    glob(path.join(dirs.source, dirs.styles, entries.css), function (er, files) {
+    return glob(path.join(dirs.source, dirs.styles, entries.css), function (er, files) {
     // files is an array of filenames.
     // If the `nonull` option is set, and nothing
     // was found, then files is ["**/*.js"]
@@ -111,8 +139,8 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
       }
 
       for (var i = files.length - 1; i >= 0; i--) {
-        gutil.log(files[i]);
-        stylusCompileTask(files[i]);
+        //gutil.log(path.resolve(files[i]));
+        stylusCompileTask(files[i], null);
       }
 
     });

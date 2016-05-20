@@ -15,7 +15,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
   gulp.task('jade', () => {
 
     try {
-      delete require.cache[require.resolve('../'+path.join(dirs.source, dirs.styles) + '/css_modules_main.json')];
+      delete require.cache[require.resolve('../'+path.join(dirs.source, dirs.styles) + '/css_modules_all.json')];
     } catch (data) {
       console.log(data);
     }
@@ -62,14 +62,13 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
     .pipe(plugins.changed(dest))
     .pipe(plugins.plumber())
 
-
     .pipe(plugins.jade({
       jade: jade,
       pretty: true,
       locals: {
         config: config,
         debug: true,
-        css: require('../'+ path.join(dirs.source, dirs.styles) + '/css_modules_main.json'),
+        css: require('../'+ path.join(dirs.source, dirs.styles) + '/css_modules_all.json'),
         site: {
           data: siteData
         }

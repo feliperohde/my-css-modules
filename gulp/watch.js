@@ -21,7 +21,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
       ], ['jade']);
 
        // css modules json file
-      gulp.watch([path.join(dirs.source, dirs.styles) + '/css_modules_main.json'])
+      gulp.watch([path.join(dirs.source, dirs.styles) + '/css_modules_all.json'])
         .on('change', function(file) {
 
           setTimeout(function (){
