@@ -29,7 +29,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
 
             browserSync.reload;
 
-          }, 500);
+          }, 800);
       });
 
       // Copy

@@ -1,4 +1,5 @@
 extends _layouts/layout
 
 block content
-  main(class=[css.hello, css.world, css.cText]) hello world!
+  main.page(id=[css.someId], class=[css.hello, css.world, css.cText])
+    span  hello world!

@@ -65,18 +65,18 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
               var cssName       = path.basename(cssFileName, '.css');
               var jsonFileName  = path.resolve("css_modules_" + cssName + '.json');
 
-
+              //json
               jsonData = jsonConcat(jsonData, json);
 
               if(isLast) {
-                string_src("css_modules_all.json", JSON.stringify(jsonData))
+                string_src("css_modules_all.json", JSON.stringify(jsonData).replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); }))
                 .pipe(gulp.dest(path.join(dirs.source + '/' + dirs.styles)));
 
                 gulp.start('cleanCssBuild');
                 gulp.start('concat');
               }
 
-                return string_src(jsonFileName, JSON.stringify(json))
+                return string_src(jsonFileName, JSON.stringify(json).replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); }))
                 .pipe(gulp.dest(path.dirname(file)));
             },
             generateScopedName: function(name, filename, css) {
@@ -84,7 +84,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
               var numLines  = css.substr(0, i).split(/[\r\n]/).length;
               var file      = path.basename(filename, '.css');
 
-              return '_' + file + Math.random().toString(36).substr(2, 9);
+              return file + Math.random().toString(36).substr(2, 12);
             }
           })
 
