@@ -4,3 +4,5 @@ build
 temp
 .grunt
 .DS_Store
+source/_styles/*.json
+source/_modules/*/*.json
