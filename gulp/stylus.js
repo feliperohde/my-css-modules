@@ -84,7 +84,11 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
               var numLines  = css.substr(0, i).split(/[\r\n]/).length;
               var file      = path.basename(filename, '.css');
 
-              return file + Math.random().toString(36).substr(2, 12);
+              //for obfuscating
+              //return file + Math.random().toString(36).substr(2, 12);
+
+              //for dev
+              return '_' + file + '_' + name.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
             }
           })
 
