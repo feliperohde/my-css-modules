@@ -5,6 +5,7 @@ import path from 'path';
 import foldero from 'foldero';
 import jade from 'jade';
 import yaml from 'js-yaml';
+import postHtml from 'posthtml-stylus-modules';
 
 export default function(gulp, plugins, args, config, taskTarget, browserSync) {
   let dirs = config.directories;
@@ -82,6 +83,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
       removeEmptyAttributes: true,
       removeRedundantAttributes: true
     }))
+    .pipe(postHtml(require('../'+ path.join(dirs.source, dirs.styles) + '/css_modules_all.json')))
     .pipe(gulp.dest(dest))
     .on('end', browserSync.reload);
   });

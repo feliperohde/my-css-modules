@@ -85,7 +85,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
               var file      = path.basename(filename, '.css');
 
               //for obfuscating
-              //return file + Math.random().toString(36).substr(2, 12);
+              //return  Math.random().toString(36).substr(2, 12);
 
               //for dev
               return '_' + file + '_' + name.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
@@ -121,7 +121,6 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
       }
 
       for (var i = files.length - 1; i >= 0; i--) {
-        //gutil.log(files[i]);
         stylusCompileTask(files[i], (i == 0) ? true : false);
       }
 
