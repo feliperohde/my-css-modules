@@ -33,7 +33,9 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
     return src;
   }
 
-
+  let hashCode = (s) => {
+    return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
+  }
 
   let jsonConcat = (o1, o2) => {
    for (var key in o2) {
@@ -92,6 +94,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
 
               //for obfuscating
               //return  Math.random().toString(36).substr(2, 12);
+              //return '_' + file + '_' + hashCode(name);
 
               //for dev
               return '_' + file + '_' + toCamelCase(name);
