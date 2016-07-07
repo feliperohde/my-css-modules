@@ -92,12 +92,14 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
               var numLines  = css.substr(0, i).split(/[\r\n]/).length;
               var file      = path.basename(filename, '.css');
 
-              //for obfuscating
+              //for insane obfuscating
               //return  Math.random().toString(36).substr(2, 12);
-              //return '_' + file + '_' + hashCode(name);
+              if(args.production) {
+                return '_' + file + '_' + hashCode(name +  numLines);
+              } else {
+                return '_' + file + '_' + toCamelCase(name);
+              }
 
-              //for dev
-              return '_' + file + '_' + toCamelCase(name);
             }
           })
 
