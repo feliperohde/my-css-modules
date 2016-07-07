@@ -45,7 +45,7 @@
     "imagemin-svgo": "~4.2.0",
     "jade": "~1.11.0",
     "jasmine-core": "2.4.1",
-    "jeet": "^6.1.4",
+    "jeet": "^6.1.1",
     "js-yaml": "~3.5.2",
     "karma": "~0.13.19",
     "karma-browserify": "~4.4.2",
