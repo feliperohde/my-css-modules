@@ -13,11 +13,18 @@ import concat from "gulp-concat";
 
 export default function(gulp, plugins, args, config, taskTarget, browserSync) {
 
+  // contact
+  gulp.task('concatcss', function() {
+    return gulp.src(dest + '/*.css')
+      .pipe(concat('build.css'))
+      .pipe(gulp.dest(dest + '/build/'));
+  });
+
   let dirs = config.directories;
   let entries = config.entries;
   let dest = path.join(taskTarget, dirs.styles.replace(/^_/, ''));
 
-  function string_src(filename, string) {
+  let string_src = (filename, string) => {
     var src = require('stream').Readable({ objectMode: true })
     src._read = function () {
       this.push(new gutil.File({ cwd: "", base: "", path: filename, contents: new Buffer(string) }))
@@ -26,22 +33,21 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
     return src;
   }
 
-  gulp.task('concat', function() {
-    return gulp.src(dest + '/*.css')
-      .pipe(concat('build.css'))
-      .pipe(gulp.dest(dest + '/build/'));
-  });
 
-  function jsonConcat(o1, o2) {
+
+  let jsonConcat = (o1, o2) => {
    for (var key in o2) {
     o1[key] = o2[key];
    }
    return o1;
   }
 
+  let toCamelCase = (str) => {
+    return str.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
+  }
+
   let jsonData = {};
   let stylusCompileTask = (file, isLast) => {
-
 
     gulp.src(file)
     .pipe(plugins.plumber())
@@ -69,14 +75,14 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
               jsonData = jsonConcat(jsonData, json);
 
               if(isLast) {
-                string_src("css_modules_all.json", JSON.stringify(jsonData).replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); }))
+                string_src("css_modules_all.json", toCamelCase(JSON.stringify(jsonData)))
                 .pipe(gulp.dest(path.join(dirs.source + '/' + dirs.styles)));
 
                 gulp.start('cleanCssBuild');
-                gulp.start('concat');
+                gulp.start('concatcss');
               }
 
-                return string_src(jsonFileName, JSON.stringify(json).replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); }))
+                return string_src(jsonFileName, toCamelCase(JSON.stringify(json)))
                 .pipe(gulp.dest(path.dirname(file)));
             },
             generateScopedName: function(name, filename, css) {
@@ -88,7 +94,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
               //return  Math.random().toString(36).substr(2, 12);
 
               //for dev
-              return '_' + file + '_' + name.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
+              return '_' + file + '_' + toCamelCase(name);
             }
           })
 

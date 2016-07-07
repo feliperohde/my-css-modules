@@ -6,6 +6,7 @@ import foldero from 'foldero';
 import jade from 'jade';
 import yaml from 'js-yaml';
 import postHtml from 'posthtml-stylus-modules';
+import gutil from 'gulp-util';
 
 export default function(gulp, plugins, args, config, taskTarget, browserSync) {
   let dirs = config.directories;
@@ -20,6 +21,20 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
     } catch (data) {
       console.log(data);
     }
+
+    let jsonCssMap = {};
+    fs.stat(path.join(dirs.source, dirs.styles) + '/css_modules_all.json', function(err, stat) {
+        if(err == null) {
+            gutil.log('File exists');
+            jsonCssMap = require('../'+ path.join(dirs.source, dirs.styles) + '/css_modules_all.json');
+            gutil.log(jsonCssMap);
+            compileJade();
+        } else {
+          compileJade();
+            gutil.log(err.code);
+        }
+    });
+
 
     let siteData = {};
     if (fs.existsSync(dataPath)) {
@@ -56,35 +71,39 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
       console.log(config);
     }
 
-    return gulp.src([
-      path.join(dirs.source, '**/*.jade'),
-      '!' + path.join(dirs.source, '{**/\_*,**/\_*/**}')
-    ])
-    .pipe(plugins.changed(dest))
-    .pipe(plugins.plumber())
+    let compileJade = () => {
+      return gulp.src([
+        path.join(dirs.source, '**/*.jade'),
+        '!' + path.join(dirs.source, '{**/\_*,**/\_*/**}')
+      ])
+      .pipe(plugins.changed(dest))
+      .pipe(plugins.plumber())
 
-    .pipe(plugins.jade({
-      jade: jade,
-      pretty: true,
-      locals: {
-        config: config,
-        debug: true,
-        css: require('../'+ path.join(dirs.source, dirs.styles) + '/css_modules_all.json'),
-        site: {
-          data: siteData
+      .pipe(plugins.jade({
+        jade: jade,
+        pretty: true,
+        locals: {
+          config: config,
+          debug: true,
+          css: jsonCssMap,
+          site: {
+            data: siteData
+          }
         }
-      }
-    }))
+      }))
 
-    .pipe(plugins.htmlmin({
-      collapseBooleanAttributes: true,
-      conservativeCollapse: true,
-      removeCommentsFromCDATA: true,
-      removeEmptyAttributes: true,
-      removeRedundantAttributes: true
-    }))
-    .pipe(postHtml(require('../'+ path.join(dirs.source, dirs.styles) + '/css_modules_all.json')))
-    .pipe(gulp.dest(dest))
-    .on('end', browserSync.reload);
+      .pipe(plugins.htmlmin({
+        collapseBooleanAttributes: true,
+        conservativeCollapse: true,
+        removeCommentsFromCDATA: true,
+        removeEmptyAttributes: true,
+        removeRedundantAttributes: true
+      }))
+      .pipe(postHtml(jsonCssMap))
+      .pipe(gulp.dest(dest))
+      .on('end', browserSync.reload);
+    };
+
+
   });
 }
