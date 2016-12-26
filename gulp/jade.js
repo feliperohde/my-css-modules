@@ -3,7 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import foldero from 'foldero';
-import jade from 'jade';
+import jade from 'pug';
 import yaml from 'js-yaml';
 import postHtml from 'posthtml-stylus-modules';
 import gutil from 'gulp-util';
@@ -30,8 +30,8 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
             gutil.log(jsonCssMap);
             compileJade();
         } else {
-          compileJade();
-            gutil.log(err.code);
+          //compileJade();
+          gutil.log(err.code);
         }
     });
 
@@ -73,7 +73,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
 
     let compileJade = () => {
       return gulp.src([
-        path.join(dirs.source, '**/*.jade'),
+        path.join(dirs.source, '**/*.pug'),
         '!' + path.join(dirs.source, '{**/\_*,**/\_*/**}')
       ])
       .pipe(plugins.changed(dest))

@@ -14,15 +14,16 @@ import concat from "gulp-concat";
 export default function(gulp, plugins, args, config, taskTarget, browserSync) {
 
   // contact
+  let dirs = config.directories;
+  let entries = config.entries;
+  let dest = path.join(taskTarget, dirs.styles.replace(/^_/, ''));
+
   gulp.task('concatcss', function() {
     return gulp.src(dest + '/*.css')
       .pipe(concat('build.css'))
       .pipe(gulp.dest(dest + '/build/'));
   });
 
-  let dirs = config.directories;
-  let entries = config.entries;
-  let dest = path.join(taskTarget, dirs.styles.replace(/^_/, ''));
 
   let string_src = (filename, string) => {
     var src = require('stream').Readable({ objectMode: true })
@@ -31,6 +32,14 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
       this.push(null)
     }
     return src;
+  }
+
+  let randomString = (length, chars) => {
+    var length = length || 8;
+    var chars = chars || "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var result = '';
+    for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+    return result;
   }
 
   let hashCode = (s) => {
@@ -80,8 +89,20 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
                 string_src("css_modules_all.json", toCamelCase(JSON.stringify(jsonData)))
                 .pipe(gulp.dest(path.join(dirs.source + '/' + dirs.styles)));
 
-                gulp.start('cleanCssBuild');
-                gulp.start('concatcss');
+                var interval = setInterval(function() {
+                  fs.stat(file, function(err, stat) {
+                    if(err == null) {
+                      gulp.start('cleanCssBuild');
+                      gulp.start('concatcss');
+
+                      clearInterval(interval);
+
+                    } else {
+                      gutil.log('deu ruim');
+                    }
+                  });
+
+                }, 300);
               }
 
                 return string_src(jsonFileName, toCamelCase(JSON.stringify(json)))
@@ -95,7 +116,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
               //for insane obfuscating
               //return  Math.random().toString(36).substr(2, 12);
               if(args.production) {
-                return '_' + file + '_' + hashCode(name +  numLines);
+                return '_' + file + '_' + randomString();
               } else {
                 return '_' + file + '_' + toCamelCase(name);
               }

@@ -1,7 +1,7 @@
 'use strict';
 
-import path from 'path';
 import gulp from 'gulp';
+import path from 'path';
 import gulpLoadPlugins from 'gulp-load-plugins';
 import pjson from './package.json';
 import minimist from 'minimist';
