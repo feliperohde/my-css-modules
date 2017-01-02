@@ -27,8 +27,9 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
         if(err == null) {
             gutil.log('File exists');
             jsonCssMap = require('../'+ path.join(dirs.source, dirs.styles) + '/css_modules_all.json');
-            gutil.log(jsonCssMap);
             compileJade();
+
+            if(args.map) gutil.log(jsonCssMap);
         } else {
           //compileJade();
           gutil.log(err.code);
@@ -79,7 +80,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
       .pipe(plugins.changed(dest))
       .pipe(plugins.plumber())
 
-      .pipe(plugins.jade({
+      .pipe(plugins.pug({
         jade: jade,
         pretty: true,
         locals: {

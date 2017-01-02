@@ -40,8 +40,8 @@ gulp.task('default', ['clean'], () => {
 gulp.task('build', [
   'copy',
   'imagemin',
-  'stylus',
   'jade',
+  'stylus',
   'browserify'
 ]);
 

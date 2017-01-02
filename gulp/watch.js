@@ -11,12 +11,13 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
     if (!args.production) {
       gulp.watch([
         path.join(dirs.source, dirs.styles, '**/*.styl'),
-        path.join(dirs.source, dirs.modules, '**/*.styl')
+        path.join(dirs.source, dirs.modules, '**/*.styl'),
+        path.join(dirs.source, dirs.components, '**/*.styl')
       ], ['stylus']);
 
       // Jade Templates
       gulp.watch([
-        path.join(dirs.source, '**/*.jade'),
+        path.join(dirs.source, '**/*.pug'),
         path.join(dirs.source, dirs.data, '**/*.{json,yaml,yml}')
       ], ['jade']);
 
@@ -36,7 +37,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
       gulp.watch([
         path.join(dirs.source, '**/*'),
         '!' + path.join(dirs.source, '{**/\_*,**/\_*/**}'),
-        '!' + path.join(dirs.source, '**/*.jade')
+        '!' + path.join(dirs.source, '**/*.pug')
       ], ['copy']);
 
       // Images

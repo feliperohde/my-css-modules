@@ -8,8 +8,14 @@ import nib from "nib";
 import cssModules from "postcss-modules";
 import fs from "fs";
 import gutil from "gulp-util";
-import glob from "glob";
+import multiglob from "multi-glob";
 import concat from "gulp-concat";
+import md5 from "js-md5";
+import crc from "js-crc";
+
+let glob = multiglob.glob;
+let crc16 =  crc.crc16;
+let crc32 =  crc.crc32;
 
 export default function(gulp, plugins, args, config, taskTarget, browserSync) {
 
@@ -54,7 +60,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
   }
 
   let toCamelCase = (str) => {
-    return str.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
+    return str.replace(/--/g, "_m_").replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
   }
 
   let jsonData = {};
@@ -64,7 +70,8 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
     .pipe(plugins.plumber())
     .pipe(plugins.sourcemaps.init())
     .pipe(plugins.stylus({
-      compress: true,
+      compress: (args.compress) ?  true : false,
+      disableCache: true,
       paths:  ['node_modules', 'styles/globals'],
       import: ['jeet/stylus/jeet', 'stylus-type-utils', 'nib', 'rupture/rupture'],
       use: [nib(), jeet()],
@@ -74,7 +81,6 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
       plugins.postcss(
 
         [
-
           autoprefixer({browsers: ['last 2 version', '> 5%', 'safari 5', 'ios 6', 'android 4']}),
 
           cssModules({
@@ -98,7 +104,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
                       clearInterval(interval);
 
                     } else {
-                      gutil.log('deu ruim');
+                      gutil.log("não encontrou o arquivo de mapa do css");
                     }
                   });
 
@@ -115,11 +121,25 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
 
               //for insane obfuscating
               //return  Math.random().toString(36).substr(2, 12);
-              if(args.production) {
-                return '_' + file + '_' + randomString();
-              } else {
-                return '_' + file + '_' + toCamelCase(name);
-              }
+              // if(args.production) {
+                // return '_' + file + '_' + randomString(12, name + file);
+
+                if(args.md5)
+                  return '_' + md5(name);
+
+                if(args.crc32)
+                  return '_' + crc32(name);
+
+                if(args.crc16)
+                  return '_' + crc16(name);
+
+                return '_' + toCamelCase(name);
+
+              // } else {
+              //   // return '_' + file + '_' + toCamelCase(name); deu ruim
+              //   return '_' + toCamelCase(name);
+              //   // return '_' + crc16(name);
+              // }
 
             }
           })
@@ -133,7 +153,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
         // Ex: 'src/_styles' --> '/styles'
         path.dirname = path.dirname.replace(dirs.source, '').replace('_', '');
       }))
-    .pipe(gulpif(args.production, plugins.cssnano({rebase: false})))
+    //.pipe(gulpif(args.production, plugins.cssnano({rebase: false})))
     .pipe(plugins.sourcemaps.write('./'))
     .pipe(gulp.dest(dest))
     .pipe(browserSync.stream());
@@ -142,7 +162,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
   // Stylus compilation
   gulp.task('stylus', ['stylusmain'], () => {
 
-    return glob('./source/_modules/**/**.styl', function (er, files) {
+    return glob(['./source/_modules/**/**.styl', './source/_components/**/**.styl'], function (er, files) {
     // files is an array of filenames.
     // If the `nonull` option is set, and nothing
     // was found, then files is ["**/*.js"]
@@ -154,8 +174,8 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
 
       for (var i = files.length - 1; i >= 0; i--) {
         stylusCompileTask(files[i], (i == 0) ? true : false);
-      }
 
+}
     });
 
   });

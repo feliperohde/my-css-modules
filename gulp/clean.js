@@ -13,7 +13,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
   ]));
 
   // Clean build css
-  gulp.task('cleanCssBuild', del.bind(null, [
+  gulp.task('cleanCssBuild', del.bind({force: true}, null, [
     path.join(dirs.temporary + '/styles/build/')
   ]));
 }
