@@ -32,7 +32,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
             if(args.map) gutil.log(jsonCssMap);
         } else {
           //compileJade();
-          gutil.log(err.code);
+          gutil.log(err);
         }
     });
 

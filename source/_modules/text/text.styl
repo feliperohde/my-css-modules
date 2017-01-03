@@ -16,4 +16,20 @@ strong
     display inline-block
     font-size 80px
 
+  &--modifier
+    font-size 100px
 
+  &--9gag
+    font-size 120px
+
+.c-text--other
+  @extend .c-text
+  text-decoration underline
+
+
+.c-8text
+  @extend .c-text;
+  color yellow
+
+  +above(desk-bk)
+    color: pink

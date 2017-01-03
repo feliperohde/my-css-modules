@@ -12,6 +12,7 @@ import multiglob from "multi-glob";
 import concat from "gulp-concat";
 import md5 from "js-md5";
 import crc from "js-crc";
+import { shake_256 } from 'js-sha3';
 
 let glob = multiglob.glob;
 let crc16 =  crc.crc16;
@@ -60,7 +61,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
   }
 
   let toCamelCase = (str) => {
-    return str.replace(/--/g, "_m_").replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
+    return str.replace(/--/g, "_m_").replace(/-([a-z0-9A-Z])/g, function (g) { return g[1].toUpperCase(); });
   }
 
   let jsonData = {};
@@ -89,6 +90,8 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
               var jsonFileName  = path.resolve("css_modules_" + cssName + '.json');
 
               //json
+
+              console.log(json)
               jsonData = jsonConcat(jsonData, json);
 
               if(isLast) {
@@ -119,27 +122,20 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
               var numLines  = css.substr(0, i).split(/[\r\n]/).length;
               var file      = path.basename(filename, '.css');
 
-              //for insane obfuscating
-              //return  Math.random().toString(36).substr(2, 12);
-              // if(args.production) {
-                // return '_' + file + '_' + randomString(12, name + file);
+              // obfuscating directives
+              if(args.md5)
+                return '_' + md5(name);
 
-                if(args.md5)
-                  return '_' + md5(name);
+              if(args.crc32)
+                return '_' + crc32(name);
 
-                if(args.crc32)
-                  return '_' + crc32(name);
+              if(args.crc16)
+                return '_' + crc16(name);
 
-                if(args.crc16)
-                  return '_' + crc16(name);
+              if(args.shake256)
+                return '_' + shake_256(name, (args.shake256 === true) ? 48 : args.shake256);
 
-                return '_' + toCamelCase(name);
-
-              // } else {
-              //   // return '_' + file + '_' + toCamelCase(name); deu ruim
-              //   return '_' + toCamelCase(name);
-              //   // return '_' + crc16(name);
-              // }
+              return '_' + toCamelCase(name);
 
             }
           })
