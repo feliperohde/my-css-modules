@@ -16,13 +16,13 @@ Na raiz do projeto basta rodar:
 
 # Uso #
 
-Gulp
+**Gulp**
 
-gulp build é responsável por gerar código para produção
+**gulp build** é responsável por gerar código para produção
 
-gulp serve cria e mantem um server local para desenvolvimento alem de manter um watcher para livereload usando browsersync
+**gulp serve** cria e mantem um server local para desenvolvimento alem de manter um watcher para livereload usando browsersync
 
-gulp test é responsável por executar os tester unitários do source
+**gulp test** é responsável por executar os tester unitários do source
 
 As tarefas podem ser rodadas com as seguintes diretivas
 
@@ -40,7 +40,7 @@ As tarefas podem ser rodadas com as seguintes diretivas
 ------------
 exemplo de uso:
 
-gulp serve --open --obfuscate --shake256=64 --compress
+**gulp serve** --open --obfuscate --shake256=64 --compress
 
 É importante saber escolher o método de obfuscação quando usado devido as altas chances de colisão de algumas delas, à exemplo a crc16 que somente deve ser usada em projetos pequenos.
 
