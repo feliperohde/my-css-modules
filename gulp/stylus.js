@@ -31,7 +31,6 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
       .pipe(gulp.dest(dest + '/build/'));
   });
 
-
   let string_src = (filename, string) => {
     var src = require('stream').Readable({ objectMode: true })
     src._read = function () {
@@ -73,8 +72,8 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
     .pipe(plugins.stylus({
       compress: (args.compress) ?  true : false,
       disableCache: true,
-      paths:  ['node_modules', 'styles/globals'],
-      import: ['jeet/stylus/jeet', 'stylus-type-utils', 'nib', 'rupture/rupture'],
+      paths:  ['node_modules', './source/_styles'],
+      import: ['jeet/stylus/jeet', 'core/base', 'stylus-type-utils', 'nib', 'rupture/rupture'],
       use: [nib(), jeet()],
       'include css': true
     }))
@@ -87,15 +86,12 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
           cssModules({
             getJSON: function(cssFileName, json) {
               var cssName       = path.basename(cssFileName, '.css');
-              var jsonFileName  = path.resolve("css_modules_" + cssName + '.json');
+              var jsonFileName  = path.resolve("css_map_" + cssName + '.json');
 
-              //json
-
-              console.log(json)
               jsonData = jsonConcat(jsonData, json);
 
               if(isLast) {
-                string_src("css_modules_all.json", toCamelCase(JSON.stringify(jsonData)))
+                string_src("css_map_all.json", toCamelCase(JSON.stringify(jsonData)))
                 .pipe(gulp.dest(path.join(dirs.source + '/' + dirs.styles)));
 
                 var interval = setInterval(function() {
@@ -114,15 +110,19 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
                 }, 300);
               }
 
-                return string_src(jsonFileName, toCamelCase(JSON.stringify(json)))
-                .pipe(gulp.dest(path.dirname(file)));
+              return string_src(jsonFileName, toCamelCase(JSON.stringify(json)))
+              .pipe(gulp.dest(path.dirname(file)));
+
             },
+
             generateScopedName: function(name, filename, css) {
               var i         = css.indexOf('.' + name);
               var numLines  = css.substr(0, i).split(/[\r\n]/).length;
               var file      = path.basename(filename, '.css');
 
               // obfuscating directives
+              if(!args.obfuscate) return name;
+
               if(args.md5)
                 return '_' + md5(name);
 
@@ -138,18 +138,17 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
               return '_' + toCamelCase(name);
 
             }
+
           })
-
         ]
-
-        )
       )
+    )
     .pipe(plugins.rename(function(path) {
         // Remove 'source' directory as well as prefixed folder underscores
         // Ex: 'src/_styles' --> '/styles'
         path.dirname = path.dirname.replace(dirs.source, '').replace('_', '');
       }))
-    //.pipe(gulpif(args.production, plugins.cssnano({rebase: false})))
+    .pipe(gulpif(args.production, plugins.cssnano({rebase: false})))
     .pipe(plugins.sourcemaps.write('./'))
     .pipe(gulp.dest(dest))
     .pipe(browserSync.stream());
@@ -158,7 +157,14 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
   // Stylus compilation
   gulp.task('stylus', ['stylusmain'], () => {
 
-    return glob(['./source/_modules/**/**.styl', './source/_components/**/**.styl'], function (er, files) {
+    return glob(
+      [
+         './source/_components/**/**.styl'
+        ,'./source/_modules/**/**.styl'
+        , './source/_organisms/**/**.styl'
+        , './source/_templates/**/**.styl'
+        , './source/_pages/**/**.styl'
+      ], function (er, files) {
     // files is an array of filenames.
     // If the `nonull` option is set, and nothing
     // was found, then files is ["**/*.js"]
@@ -170,8 +176,8 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
 
       for (var i = files.length - 1; i >= 0; i--) {
         stylusCompileTask(files[i], (i == 0) ? true : false);
+      }
 
-}
     });
 
   });

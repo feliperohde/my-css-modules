@@ -11,8 +11,11 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
     if (!args.production) {
       gulp.watch([
         path.join(dirs.source, dirs.styles, '**/*.styl'),
+        path.join(dirs.source, dirs.components, '**/*.styl'),
         path.join(dirs.source, dirs.modules, '**/*.styl'),
-        path.join(dirs.source, dirs.components, '**/*.styl')
+        path.join(dirs.source, dirs.organisms, '**/*.styl'),
+        path.join(dirs.source, dirs.templates, '**/*.styl'),
+        path.join(dirs.source, dirs.pages, '**/*.styl'),
       ], ['stylus']);
 
       // Jade Templates
@@ -22,7 +25,7 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
       ], ['jade']);
 
        // css modules json file
-      gulp.watch([path.join(dirs.source, dirs.styles) + '/css_modules_all.json'])
+      gulp.watch([path.join(dirs.source, dirs.styles) + '/css_map_all.json'])
         .on('change', function(file) {
 
           setTimeout(function (){

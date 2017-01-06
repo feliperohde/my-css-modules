@@ -7,6 +7,7 @@ import jade from 'pug';
 import yaml from 'js-yaml';
 import postHtml from 'posthtml-stylus-modules';
 import gutil from 'gulp-util';
+import gulpif from 'gulp-if';
 
 export default function(gulp, plugins, args, config, taskTarget, browserSync) {
   let dirs = config.directories;
@@ -17,24 +18,28 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
   gulp.task('jade', () => {
 
     try {
-      delete require.cache[require.resolve('../'+path.join(dirs.source, dirs.styles) + '/css_modules_all.json')];
+      delete require.cache[require.resolve('../'+path.join(dirs.source, dirs.styles) + '/css_map_all.json')];
     } catch (data) {
-      console.log(data);
+      // console.log(data);
     }
 
     let jsonCssMap = {};
-    fs.stat(path.join(dirs.source, dirs.styles) + '/css_modules_all.json', function(err, stat) {
-        if(err == null) {
-            gutil.log('File exists');
-            jsonCssMap = require('../'+ path.join(dirs.source, dirs.styles) + '/css_modules_all.json');
-            compileJade();
+    var interval = setInterval(function() {
+      fs.stat(path.join(dirs.source, dirs.styles) + '/css_map_all.json', function(err, stat) {
+          if(err == null) {
+              clearInterval(interval);
+              gutil.log('File exists');
+              jsonCssMap = require('../'+ path.join(dirs.source, dirs.styles) + '/css_map_all.json');
 
-            if(args.map) gutil.log(jsonCssMap);
-        } else {
-          //compileJade();
-          gutil.log(err);
-        }
-    });
+              compileJade();
+
+              if(args.map) gutil.log(jsonCssMap);
+          } else {
+            //compileJade();
+            gutil.log("Mapa de css não encontrado.");
+          }
+      });
+    }, 300);
 
 
     let siteData = {};
@@ -98,9 +103,10 @@ export default function(gulp, plugins, args, config, taskTarget, browserSync) {
         conservativeCollapse: true,
         removeCommentsFromCDATA: true,
         removeEmptyAttributes: true,
+        collapseWhitespace: true,
         removeRedundantAttributes: true
       }))
-      .pipe(postHtml(jsonCssMap))
+      .pipe(gulpif(args.obfuscate, postHtml(jsonCssMap)))
       .pipe(gulp.dest(dest))
       .on('end', browserSync.reload);
     };

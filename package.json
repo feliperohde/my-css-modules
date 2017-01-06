@@ -86,8 +86,13 @@
       "destination": "/",
       "temporary": "temp/",
       "//": "Directories relative to `source` directory",
-      "modules": "_modules",
+
       "components": "_components",
+      "modules": "_modules",
+      "organisms": "_organisms",
+      "templates": "_templates",
+      "pages": "_pages",
+
       "layouts": "_layouts",
       "images": "_images",
       "styles": "_styles",

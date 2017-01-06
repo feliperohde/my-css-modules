@@ -1,17 +1,8 @@
 // Import Modules
 @import 'core/normalize';
-@import 'core/base';
 
-#some-id
-  position fixed
-  width 100%
-  top 0
-  left 0
-
-.content-wrapper
-  max-width 980px
-  margin 0 auto
-  padding 0 remify(gutter)
+.wrapper
+  center(desk-bk, gutter)
 
 :global .page
   padding gutter * 2
@@ -19,16 +10,6 @@
 body
   background-color $smoke
   font-size 16px
-
-.hello
-  background rgb(0,0,0)
-
-.world
-  color black
-
-.word-x
-  @extend .world
-  font-size 50px
 
 // Styling on warning for users on IE7 or below
 .browsehappy
@@ -39,14 +20,9 @@ body
   padding 0.5em 0
 
 
+// for desktops +
 +above(desk-bk)
   body
-    background-color blue
-
-  .world
-    background-color red
-
-  .word-x
-    font-size 100px
+    background-color $light-blue
 
 

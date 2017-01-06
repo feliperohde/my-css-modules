@@ -1,35 +1,12 @@
-// Import Modules
-@import '../../_styles/core/base';
+// Basic text wrapping module
 
 b
 strong
   font-weight bolder
 
-.c-text
-  text-decoration line-through
-  text-align center
-  @extend .clear
-  position relative
+.m-text
+  font-family 'Sans Serif'
 
-  &:after
-    content ':)'
-    display inline-block
-    font-size 80px
+  p
+    line-height 1.8
 
-  &--modifier
-    font-size 100px
-
-  &--9gag
-    font-size 120px
-
-.c-text--other
-  @extend .c-text
-  text-decoration underline
-
-
-.c-8text
-  @extend .c-text;
-  color yellow
-
-  +above(desk-bk)
-    color: pink

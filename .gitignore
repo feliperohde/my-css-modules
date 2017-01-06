@@ -4,5 +4,11 @@ build
 temp
 .grunt
 .DS_Store
+*.sublime-project
+*.sublime-workspace
 source/_styles/*.json
+source/_components/*/*.json
 source/_modules/*/*.json
+source/_organisms/*/*.json
+source/_templates/*/*.json
+source/_pages/*/*.json
